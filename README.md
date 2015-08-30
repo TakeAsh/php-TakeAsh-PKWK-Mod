@@ -1,2 +1,2 @@
-# php-TakeAsh-PKWK-Mod
-PukiWiki modification
+﻿# TakeAsh-PKWK-Mod
+TakeAsh's PukiWiki modification
