@@ -24,7 +24,7 @@ defined('PLUGIN_TRACKER_REJECT_SPAMCOUNT')||define('PLUGIN_TRACKER_REJECT_SPAMCO
 // ----
 // Basic interface and strategy
 
-define('PLUGIN_TRACKER_USAGE',      '#tracker([config[/form][,basepage]])');
+define('PLUGIN_TRACKER_USAGE',      '#tracker([config[/form][,basepage[,createProxy]]])');
 define('PLUGIN_TRACKER_LIST_USAGE', '#tracker_list([config[/list]][[,base][,field:sort[;field:sort ...][,limit]]])');
 
 // $refer  : Where the plugin had been set / Where to return back to
@@ -70,14 +70,18 @@ function plugin_tracker_convert()
 
 	$args = func_get_args();
 	$argc = count($args);
-	if ($argc > 2) return PLUGIN_TRACKER_USAGE . '<br />';
+	if ($argc > 3) return PLUGIN_TRACKER_USAGE . '<br />';
 
 	$base   = isset($vars['page']) ? $vars['page'] : '';
 	$refer  = '';
 	$config = '';
 	$form   = '';
 	$rel    = '';
+	$createProxy = '';
 	switch ($argc) {
+	case 3:
+		$createProxy = $args[2];
+		/*FALLTHROUGH*/
 	case 2:
 		$rel = $args[1];
 		/*FALLTHROUGH*/
@@ -92,7 +96,7 @@ function plugin_tracker_convert()
 	unset($args, $argc, $arg);
 
 	$tracker_form = & new Tracker_form();
-	if (! $tracker_form->init($base, $refer, $config, $rel)) {
+	if (! $tracker_form->init($base, $refer, $config, $rel, $createProxy)) {
 		return '#tracker: ' . htmlspecialchars($tracker_form->error) . '<br />';
 	}
 
@@ -151,6 +155,7 @@ function plugin_tracker_action()
 
 	$base  = isset($post['_base'])  ? $post['_base']  : '';
 	$refer = isset($post['_refer']) ? $post['_refer'] : '';
+	$createProxy = isset($post['_createProxy']) ? $post['_createProxy'] : '';
 
 	// $page name to add will be decided here
 	$num  = 0;
@@ -168,6 +173,7 @@ function plugin_tracker_action()
 	}
 
 	$config = isset($post['_config']) ? $post['_config'] : '';
+	$createProxy = isset($post['_createProxy']) ? $post['_createProxy'] : '';
 
 	// Petit SPAM Check (Client(Browser)-Server Ticket Check)
 	$spam = FALSE;
@@ -271,6 +277,11 @@ function plugin_tracker_action()
 	// Write $template, without touch
 	page_write($page, join('', $template));
 
+	// Create proxy page
+	if ($createProxy && ($proxyPage = isset($_post[$createProxy]) ? $_post[$createProxy] : '')) {
+		page_write($proxyPage, '#include(' . $page . ',notitle)');
+	}
+
 	pkwk_headers_sent();
 	header('Location: ' . get_page_location_uri($page));
 	exit;
@@ -288,13 +299,16 @@ class Tracker_form
 	var $raw_fields;
 	var $fields = array();
 
+	var $createProxy;
+
 	var $error  = '';	// Error message
 
-	function init($base, $refer = '', $config = NULL, $relative = '')
+	function init($base, $refer = '', $config = NULL, $relative = '', $createProxy = '')
 	{
 		$base     = trim($base);
 		$refer    = trim($refer);
 		$relative = trim($relative);
+		$createProxy = trim($createProxy);
 
 		if ($refer  == '') $refer  = $base;
 		if ($base   == '') $base   = $refer;	// Compat
@@ -312,6 +326,7 @@ class Tracker_form
 
 		$this->base  = $base;
 		$this->refer = $refer;
+		$this->createProxy = $createProxy;
 
 		if ($config !== NULL && ! $this->loadConfig($config)) {
 			return FALSE;
@@ -850,6 +865,7 @@ class Tracker_field_submit extends Tracker_field
 		$s_base   = htmlspecialchars($form->base);
 		$s_refer  = htmlspecialchars($form->refer);
 		$s_config = htmlspecialchars($form->config_name);
+		$s_createProxy = htmlspecialchars($form->createProxy);
 
 		return <<<EOD
 <input type="submit" value="$s_title" />
@@ -857,6 +873,7 @@ class Tracker_field_submit extends Tracker_field
 <input type="hidden" name="_refer"  value="$s_refer" />
 <input type="hidden" name="_base"   value="$s_base" />
 <input type="hidden" name="_config" value="$s_config" />
+<input type="hidden" name="_createProxy" value="$s_createProxy" />
 EOD;
 	}
 }
