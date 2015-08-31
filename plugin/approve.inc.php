@@ -1,11 +1,14 @@
 ﻿<?php
 
-define('PLUGIN_APPROVE_CONFIG_ROOT', ':config/plugin/approve/');
+define('PLUGIN_APPROVE_CONFIG_ROOT', 'plugin/approve/');
 define('PLUGIN_APPROVE_KEY_PATTERN', 'pattern');
 define('PLUGIN_APPROVE_KEY_REPLACE', 'replace');
 define('PLUGIN_APPROVE_KEY_PAGE_REGEX', 'page_regex');
 define('PLUGIN_APPROVE_KEY_LABEL', 'label');
 define('PLUGIN_APPROVE_DEFAULT_LABEL', 'Approve');
+
+if (! defined('LIB_DIR')) define('LIB_DIR', '');
+require(LIB_DIR . 'yamlconfig.php');
 
 // Show a button
 function plugin_approve_inline($name)
@@ -16,8 +19,8 @@ function plugin_approve_inline($name)
 		return '<p>approve(): empty name.</p>';
 	}
 	$config_path = PLUGIN_APPROVE_CONFIG_ROOT . $name;
-	$config = plugin_approve_load_config($config_path);
-	if ($config === FALSE){
+	$config = new YamlConfig($config_path);
+	if (!$config->read()){
 		return '<p>approve(): failed to load config. "' . $config_path . '"</p>';
 	}
 	$pattern = $config[PLUGIN_APPROVE_KEY_PATTERN];
@@ -91,8 +94,8 @@ function plugin_approve_action()
 		return '<p>approve(): empty page.</p>';
 	}
 	$config_path = PLUGIN_APPROVE_CONFIG_ROOT . $name;
-	$config = plugin_approve_load_config($config_path);
-	if ($config === FALSE){
+	$config = new YamlConfig($config_path);
+	if (!$config->read()){
 		return array('msg'=>'Approve', 'body'=>'<p>approve(): failed to load config. "' . $config_path . '"</p>');
 	}
 	$pattern = $config[PLUGIN_APPROVE_KEY_PATTERN];
@@ -129,14 +132,6 @@ function plugin_approve_action()
 	pkwk_headers_sent();
 	header('Location: ' . get_page_location_uri($page));
 	exit;
-}
-
-function plugin_approve_load_config($config_path){
-	$source = get_source($config_path, FALSE, TRUE);
-	if ($source === FALSE){
-		return FALSE;
-	}
-	return yaml_parse($source);
 }
 
 /**
