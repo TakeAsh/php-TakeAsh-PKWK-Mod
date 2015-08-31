@@ -1282,9 +1282,9 @@ class Tracker_list
 
 			// One column set (one-dimensional array, sort type, and sort order)
 			// for array_multisort()
-			$params[] = $columns[$fieldname];
-			$params[] = $types[$fieldname];
-			$params[] = $orders[$fieldname];
+			$params[] = & $columns[$fieldname];
+			$params[] = & $types[$fieldname];
+			$params[] = & $orders[$fieldname];
 		}
 		if (! empty($orders) && ! empty($this->rows)) {
 			$params[] = & $this->rows;	// The target
