@@ -179,9 +179,11 @@ function plugin_tracker_action()
 	$spam = FALSE;
 	if (function_exists('pkwk_session_start') && pkwk_session_start() != 0) {
 		$s_tracker = md5(get_ticket() . $config_name);
-		if ($_SESSION['tracker'] != $s_tracker) {
-			$spam = TRUE;
-		}
+		error_log( "\$s_tracker: " . $s_tracker );
+		error_log( "\$_SESSION['tracker']: " . $_SESSION['tracker'] );
+//		if ($_SESSION['tracker'] != $s_tracker) {
+//			$spam = TRUE;
+//		}
 	} else {
 		if (isset($post['encode_hint']) && $post['encode_hint'] != '') {
 			if (PKWK_ENCODING_HINT != $post['encode_hint']) $spam = TRUE;
