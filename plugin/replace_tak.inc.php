@@ -6,6 +6,7 @@
 // 全てのページに対して、指定の単語を置換する
 
 // 更新履歴
+// -2015-09-01 ver 0.2	Search word にデフォルト値表示
 // -2008-03-07 ver 0.1a	正規表現対応、変換対象ページリストアップ
 // -2006-07-28 ver 0.1	PukiWiki-1.4.7対応版
 // -2004-09-02 ver 0.0	暫定版
@@ -16,13 +17,15 @@
 //   対象となるページ一覧が出るので、間違いなければReplaceを押す。
 //   オプションとして、ページ名の絞り込みを指定できる。
 
+define('PLUGIN_REPLACE_TAK_SEARCH_DEFAULT', '#^.*$#');
+
 function plugin_replace_tak_action()
 {
 	global $script, $post;
 
 	$pass    = isset($post['pass'])    ? $post['pass']    : NULL;
 	$prefix  = isset($post['prefix'])  ? $post['prefix']  : NULL;
-	$search  = isset($post['search'])  ? $post['search']  : NULL;
+	$search  = isset($post['search'])  ? $post['search']  : PLUGIN_REPLACE_TAK_SEARCH_DEFAULT;
 	$replace = isset($post['replace']) ? $post['replace'] : NULL;
 	$act     = isset($post['act'])     ? $post['act']     : NULL;
 	$preserveTimeStamp = array_key_exists('preserveTimeStamp' ,$post) ? $post['preserveTimeStamp'] : NULL;
@@ -34,7 +37,7 @@ function plugin_replace_tak_action()
 	$islogin = pkwk_login($pass);
 
 	// パスワード一致
-	if ( $search!='' && $islogin )
+	if ( $search != PLUGIN_REPLACE_TAK_SEARCH_DEFAULT && $islogin )
 	{
 		$pages = get_existpages();
 		if ( $prefix != NULL ){
@@ -93,7 +96,7 @@ function plugin_replace_tak_action()
 
 EOD;
 	
-	if ( $search != '' ){
+	if ( $search != PLUGIN_REPLACE_TAK_SEARCH_DEFAULT ){
 		$body .= "<p>Target: " . count($changedpages) . " page(s).</p>\n";
 	}
 	if (count($changedpages)>0){
