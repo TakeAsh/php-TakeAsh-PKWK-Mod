@@ -59,6 +59,10 @@ define('PLUGIN_TRACKER_SORT_ORDER_DEFAULT', PLUGIN_TRACKER_SORT_ORDER_ASC);
 
 // ----
 
+// dummy class for outline analysis in Sakura Editor
+class plugin_tracker_dummy
+{}
+
 // Show a form
 function plugin_tracker_convert()
 {
@@ -1549,6 +1553,10 @@ class Tracker_list
 	}
 }
 
+// dummy class for outline analysis in Sakura Editor
+class plugin_tracker_list_dummy
+{}
+	
 // Roughly checking listed fields from template
 // " [field1] [field2,style1] " => array('fielld', 'field2')
 function plugin_tracker_field_pickup($string = '')
