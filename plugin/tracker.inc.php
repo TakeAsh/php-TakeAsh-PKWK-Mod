@@ -1584,19 +1584,24 @@ function plugin_tracker_get_source($page, $join=FALSE)
 function plugin_tracker_escape($string, $syntax_hint = '')
 {
 	// Default: line-oriented
-	$from = array("\n",   "\r"  );
-	$to   = array('&br;', '&br;');
+	$replace_pairs = array(
+		"\r\n" => '&br;', // Win
+		"\n"   => '&br;', // Linux
+		"\r"   => '&br;', // Mac
+	);
 
 	if ($syntax_hint == '|' || $syntax_hint == ':') {
 		// <table> or <dl> Wiki syntax: Excape '|'
-		$from[] = '|';
-		$to[]   = '&#x7c;';
+		$replace_pairs['|'] = '&#x7c;';
 	} else if ($syntax_hint == ',') {
 		// <table> by comma
-		$from[] = ',';
-		$to[]   = '&#x2c;';
+		$replace_pairs[','] = '&#x2c;';
 	}
-	return str_replace($from, $to, $string);
+	$ret = array();
+	foreach($string as $line){
+		array_push($ret, strtr($line, $replace_pairs));
+	}
+	return $ret;
 }
 
 function plugin_tracker_message($key)
