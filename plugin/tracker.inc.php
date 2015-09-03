@@ -542,18 +542,6 @@ class Tracker_field
 	{
 		return '%s';
 	}
-
-	/**
-		unify EOL for each platforms
-		@param	$string	string to be converted
-		@param	$to		target EOL code
-		@return	string to be replaced to $to
-		@remarks [PHPで改行コードを統一する関数: CRLF, CR, LF が混在してる文字列を LF に変換するなど - Qiita](http://qiita.com/suin/items/cbbbe8844fd734fa20e2)
-	*/
-	function unify_EOL($string, $to = "\n")
-	{
-		return strtr($string, array_fill_keys(array("\r\n", "\r", "\n"), $to));
-	}
 }
 
 class Tracker_field_text extends Tracker_field
@@ -646,11 +634,6 @@ class Tracker_field_textarea extends Tracker_field
 				' rows="' . $s_rows . '">' .
 				$s_default .
 			'</textarea>';
-	}
-
-	function format_value($value)
-	{
-		return $this->unify_EOL($value);
 	}
 
 	function format_cell($value)
