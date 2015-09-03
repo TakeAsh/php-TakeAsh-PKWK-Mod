@@ -1597,9 +1597,17 @@ function plugin_tracker_escape($string, $syntax_hint = '')
 		// <table> by comma
 		$replace_pairs[','] = '&#x2c;';
 	}
-	$ret = array();
-	foreach($string as $line){
-		array_push($ret, strtr($line, $replace_pairs));
+	//error_log('[plugin_tracker_escape] gettype($string): ' . gettype($string));
+	switch (gettype($string)){
+		case 'string':
+			$ret = strtr($string, $replace_pairs);
+			break;
+		case 'array':
+			$ret = array();
+			foreach($string as $line){
+				array_push($ret, strtr($line, $replace_pairs));
+			}
+			break;
 	}
 	return $ret;
 }
