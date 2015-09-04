@@ -107,7 +107,7 @@ function plugin_tracker_convert()
 	// Load $template
 	$form = ($form != '') ? $form : PLUGIN_TRACKER_DEFAULT_FORM;
 	$form = $tracker_form->config->page . '/' . $form;
-	$template = plugin_tracker_get_source($form, TRUE);
+	$template = plugin_tracker_get_source($form, TRUE, FALSE);
 	if ($template === FALSE || empty($template)) {
 		return '#tracker: Form not found: ' . $form . '<br />';
 	}
@@ -1553,7 +1553,7 @@ function plugin_tracker_field_pickup($string = '')
 	$fieldnames = array();
 
 	$matches = array();
-	preg_match_all('/\[([^\[\]]+)\]/', $string, $matches);
+	preg_match_all('/\[([^#\[\]]+)\]/', $string, $matches);
 	unset($matches[0]);
 
 	foreach ($matches[1] as $match) {
@@ -1566,22 +1566,24 @@ function plugin_tracker_field_pickup($string = '')
 	return array_keys($fieldnames);
 }
 
-function plugin_tracker_get_source($page, $join=FALSE)
+function plugin_tracker_get_source($page, $join=FALSE, $removeAnchors=TRUE)
 {
 	$source = get_source($page, TRUE, $join);
 	if ($source === FALSE) return FALSE;
 
-	return preg_replace(
-		 array(
-			'/^#freeze\s*$/im',
-			'/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m',	// Remove fixed-heading anchors
-		),
-		array(
-			'',
-			'$1$2',
-		),
-		$source
+	$patterns = array(
+		'/^#freeze\s*$/im',
 	);
+	$replaces = array(
+		'',
+	);
+	if ($removeAnchors){
+		// Remove fixed-heading anchors
+		$patterns[] = '/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m';
+		$replaces[] = '$1$2';
+	}
+
+	return preg_replace($patterns, $replaces, $source);
 }
 
 // Escape special characters not to break Wiki syntax
