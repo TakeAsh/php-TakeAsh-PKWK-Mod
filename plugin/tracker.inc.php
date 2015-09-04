@@ -912,6 +912,10 @@ class Tracker_field_past extends Tracker_field
 ///////////////////////////////////////////////////////////////////////////
 // tracker_list plugin
 
+// dummy class for outline analysis in Sakura Editor
+class plugin_tracker_list_dummy
+{}
+
 function plugin_tracker_list_convert()
 {
 	global $vars;
@@ -1537,7 +1541,7 @@ class Tracker_list
 }
 
 // dummy class for outline analysis in Sakura Editor
-class plugin_tracker_list_dummy
+class plugin_tracker_common_dummy
 {}
 	
 // Roughly checking listed fields from template
