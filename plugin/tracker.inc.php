@@ -1549,7 +1549,7 @@ function plugin_tracker_field_pickup($string = '')
 	$fieldnames = array();
 
 	$matches = array();
-	preg_match_all('/\[([^\[\]]+)\]/', $string, $matches);
+	preg_match_all('/\[([^#\[\]]+)\]/', $string, $matches);
 	unset($matches[0]);
 
 	foreach ($matches[1] as $match) {
@@ -1570,11 +1570,9 @@ function plugin_tracker_get_source($page, $join=FALSE)
 	return preg_replace(
 		 array(
 			'/^#freeze\s*$/im',
-			'/^(\*{1,3}.*)\[#[A-Za-z][\w-]+\](.*)$/m',	// Remove fixed-heading anchors
 		),
 		array(
 			'',
-			'$1$2',
 		),
 		$source
 	);
